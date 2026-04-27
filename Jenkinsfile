@@ -6,6 +6,7 @@ pipeline {
         CONTAINER_NAME = "foodexpress-container"
         EC2_USER = "ubuntu"
         EC2_HOST = "3.94.118.121"
+        SSH_KEY = "C:\\Users\\Admin\\.ssh\\foodexpress-key"
     }
 
     stages {
@@ -29,19 +30,15 @@ pipeline {
 
         stage('Copy Image to EC2') {
             steps {
-                sshagent(['ec2-ssh-key']) {
-                    bat 'scp -o StrictHostKeyChecking=no foodexpress-app.tar %EC2_USER%@%EC2_HOST%:/home/ubuntu/'
-                }
+                bat 'scp -i "%SSH_KEY%" -o StrictHostKeyChecking=no foodexpress-app.tar %EC2_USER%@%EC2_HOST%:/home/ubuntu/'
             }
         }
 
         stage('Deploy Container on EC2') {
             steps {
-                sshagent(['ec2-ssh-key']) {
-                    bat '''
-                    ssh -o StrictHostKeyChecking=no %EC2_USER%@%EC2_HOST% "docker load -i /home/ubuntu/foodexpress-app.tar && docker stop foodexpress-container || true && docker rm foodexpress-container || true && docker run -d -p 3000:3000 --name foodexpress-container foodexpress-app"
-                    '''
-                }
+                bat '''
+                ssh -i "%SSH_KEY%" -o StrictHostKeyChecking=no %EC2_USER%@%EC2_HOST% "docker load -i /home/ubuntu/foodexpress-app.tar && docker stop foodexpress-container || true && docker rm foodexpress-container || true && docker run -d -p 3000:3000 --name foodexpress-container foodexpress-app"
+                '''
             }
         }
     }
