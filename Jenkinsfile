@@ -6,7 +6,7 @@ pipeline {
         CONTAINER_NAME = "foodexpress-container"
         EC2_USER = "ubuntu"
         EC2_HOST = "3.94.118.121"
-        SSH_KEY = "C:\\Users\\Admin\\.ssh\\foodexpress-key"
+        SSH_KEY = "C:\\jenkins-keys\\foodexpress-key"
     }
 
     stages {
